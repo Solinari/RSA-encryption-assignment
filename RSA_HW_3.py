@@ -1,4 +1,5 @@
 # RSA
+import math
 import random
 from fractions import gcd
 import inspect
@@ -16,14 +17,40 @@ import inspect
 ##    return a
 
 #helpers
-def getE(x):
+
+def checkPrimes():
+    '''fix p and q to be prime'''
+
+    p = random.getrandbits(32)
+    q = random.getrandbits(32)
+    
+    c = [p, q]
+    f = True
+
+    while f:
+        for i in range(len(c)):
+            
+            y = int(math.sqrt(c[i])) + 1
+
+            for j in range(2, y):
+
+                if pow(c[i],1,j) == 0:
+                    print("Not a prime: {}, this prime mod {} = {}".format(c[i], j,pow(c[i],1,j)))
+                    c[i] = random.getrandbits(32)
+                    continue
+            print("confirmed prime: {}, this prime mod it's square root:{} = {}".format(c[i], y,pow(c[i],1,y)))
+        f = False
+
+    return c
+
+def getE(m):
     '''gcd x by random ints less than it till you get a prime'''
 
-    e = random.randrange(1,x)
+    e = random.randrange(1,m)
 
-    while gcd(e,x) != 1:
+    while gcd(e,m) != 1:
     
-        e = random.randrange(1,x)
+        e = random.randrange(1,m)
         
     return e
 
@@ -34,18 +61,25 @@ def GenerateKeys():
     '''make p,q,n,m,e,d'''
 
     # k can be anything. start at 32 to force me to code efficiantly
-    # but try to make 2048 work for the lawls
-    p = random.getrandbits(32)
-    q = random.getrandbits(32)
-    n = p * q
-    x = (p - 1) * (q - 1)
-    e = getE(x)
-    #d is broken, fix d.
-    d = pow(e, -1, n)
-    print(d)
+    # but try to make 2048 work for the lawl
+    
+    #check p and q fix them if they ain't prime
+    c = checkPrimes()
 
-    #test -this works pretty fast
-    #print(hex(p))
+    p = c[0]
+    q = c[1]   
+                    
+    print("p: {} q: {} are prime!".format(p,q))
+        
+    n = p * q
+    m = (p - 1) * (q - 1)
+    print("m {}".format(m))
+    e = getE(m)
+    print("e {}".format(e))
+    d = 1 ##    FIX THIS. USE EXTENDED EUCLIDIAN ALGORITHM!!!!
+    print("d {}".format(d))
+
+
 
 GenerateKeys()
 
