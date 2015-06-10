@@ -21,8 +21,8 @@ import inspect
 def checkPrimes():
     '''fix p and q to be prime'''
 
-    p = random.getrandbits(32)
-    q = random.getrandbits(32)
+    p = random.randrange(3, random.getrandbits(32))
+    q = random.randrange(3, random.getrandbits(32))
     
     c = [p, q]
     f = True
@@ -35,10 +35,10 @@ def checkPrimes():
             for j in range(2, y):
 
                 if pow(c[i],1,j) == 0:
-                    print("Not a prime: {}, this prime mod {} = {}".format(c[i], j,pow(c[i],1,j)))
-                    c[i] = random.getrandbits(32)
+                    #print("Not a prime: {}, this prime mod {} = {}".format(c[i], j,pow(c[i],1,j)))
+                    c[i] = random.randrange(3, random.getrandbits(32))               
                     continue
-            print("confirmed prime: {}, this prime mod it's square root:{} = {}".format(c[i], y,pow(c[i],1,y)))
+            #print("confirmed prime: {} this prime mod it's square root:{} = {}".format(c[i], y-1,pow(c[i],1,y)))
         f = False
 
     return c
@@ -46,15 +46,42 @@ def checkPrimes():
 def getE(m):
     '''gcd x by random ints less than it till you get a prime'''
 
-    e = random.randrange(1,m)
+    #idk how small orlarge to make e...
+    e = random.randint(3,int(math.sqrt((math.sqrt(m)))))
+    #e = random.randint(3,int(math.sqrt((math.sqrt(m)))))
 
     while gcd(e,m) != 1:
-    
-        e = random.randrange(1,m)
+
+        e = random.randint(3,int(math.sqrt((math.sqrt(m)))))
+
+
         
     return e
 
+def getInv(w, u):
+    '''get inverse mod'''
+
+    t = 0
+    nt = 1
+    r = u
+    nr = w
+
+    while nr != 0:
+        qu = r // nr
+        t, nt = nt, t - qu * nt
+        r, nr = nr, r - qu * nr
+
+    if r > 1:
+        return 0
+
+    if t < 0:
+        t += u
+
+    return t
+
+
 #GenerateKeys
+
 
 
 def GenerateKeys():
@@ -66,26 +93,49 @@ def GenerateKeys():
     #check p and q fix them if they ain't prime
     c = checkPrimes()
 
-    p = c[0]
-    q = c[1]   
+    p = int(c[0])
+    q = int(c[1])
                     
-    print("p: {} q: {} are prime!".format(p,q))
+    print("p: {}\nq: {}".format(p,q))
         
     n = p * q
+    print("n: {}".format(n))
     m = (p - 1) * (q - 1)
-    print("m {}".format(m))
+    print("m: {}".format(m))
     e = getE(m)
-    print("e {}".format(e))
-    d = 1 ##    FIX THIS. USE EXTENDED EUCLIDIAN ALGORITHM!!!!
-    print("d {}".format(d))
+    print("e: {}".format(e))
+    d = getInv(e, m)
+    print("d: {}".format(d))
+
+    out = [p,q,n,m,e,d]
+
+    return out
 
 
 
 GenerateKeys()
 
-#Encrypt
 
+# now the easy parts
+
+#Encrypt
+def RSAEncrypt(myint, e, m):
+
+    return pow(myint, e, m)
 
 
 #Decrypt
+def RSADecrypt(myint,d, m):
+
+    return  pow(myint, d, m)
+
+gen = GenerateKeys()
+
+myint = random.randrange(3, gen[3])
+
+print(myint)
+
+print(RSAEncrypt(myint, gen[4],gen[3]))
+
+print(RSADecrypt(myint, gen[5],gen[3]))
 
