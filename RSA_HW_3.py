@@ -21,8 +21,8 @@ import inspect
 def checkPrimes():
     '''fix p and q to be prime'''
 
-    p = random.randrange(3, random.getrandbits(32))
-    q = random.randrange(3, random.getrandbits(32))
+    p = random.randrange(32768, 65535 + 1)
+    q = random.randrange(32768, 65535 + 1)
     
     c = [p, q]
     f = True
@@ -36,9 +36,9 @@ def checkPrimes():
 
                 if pow(c[i],1,j) == 0:
                     #print("Not a prime: {}, this prime mod {} = {}".format(c[i], j,pow(c[i],1,j)))
-                    c[i] = random.randrange(3, random.getrandbits(32))               
+                    c[i] = random.randrange(32768, 65535 + 1)               
                     continue
-            #print("confirmed prime: {} this prime mod it's square root:{} = {}".format(c[i], y-1,pow(c[i],1,y)))
+            print("confirmed prime: {} this prime mod it's square root:{} = {}".format(c[i], y-1,pow(c[i],1,y)))
         f = False
 
     return c
@@ -111,23 +111,18 @@ def GenerateKeys():
 
     return out
 
-
-
-GenerateKeys()
-
-
 # now the easy parts
 
 #Encrypt
-def RSAEncrypt(myint, e, m):
+def RSAEncrypt(theint, e, n):
 
-    return pow(myint, e, m)
+    return pow(theint, e, n)
 
 
 #Decrypt
-def RSADecrypt(myint,d, m):
+def RSADecrypt(theint,d,e, n):
 
-    return  pow(myint, d, m)
+    return  pow(pow(theint,e), d, n)
 
 gen = GenerateKeys()
 
@@ -135,7 +130,7 @@ myint = random.randrange(3, gen[3])
 
 print(myint)
 
-print(RSAEncrypt(myint, gen[4],gen[3]))
+print(RSAEncrypt(myint, gen[4],gen[2]))
 
-print(RSADecrypt(myint, gen[5],gen[3]))
+print(RSADecrypt(myint, gen[5], gen[4],gen[2]))
 
